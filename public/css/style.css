@@ -1,0 +1,131 @@
+@import url("reset.css");
+@import url("slimbox.css");
+html {
+	background: #FFF;
+}
+
+body {
+	font-family: "lucida grand", arial, sans-serif;
+	background: #FFF;
+	margin: 1em auto;
+	width: 770px;		
+}
+
+h1 {
+	color: #39F;
+	margin: 0.5em 0;
+	font-size: x-large;
+	font-weight: bold;
+}
+
+h2 {
+	color: #333;
+	font-family: "lucida-grand", times, serif;
+	font-weight: bold;
+	font-size: large;
+	margin: 0.5em 0;
+}
+
+h3 {
+	color: #900;
+	font-family: "gill sans";
+	font-size: large;
+	margin-top: 0.4em;
+}
+
+h4 {
+	color: #000;
+	font-size: medium;
+}
+
+p {
+	color: #333;
+	font-family: "gill sans";
+	font-size: small;
+	line-height: 1.5em;
+	margin: 1em 0;
+}
+
+a:link, a:visited {
+	color: #80250F;
+}
+
+a:hover, a:active {
+	color: #F00;
+	text-decoration: none;
+}
+
+ul, ol {
+	list-style: square outside;
+}
+
+li {
+	margin: 5px 0;
+}
+
+table {
+	width: 100%;
+	margin: 10px auto;
+}
+
+th {
+	background: #CDF;
+}
+
+th, td {
+	padding: 5px 5px;
+}
+
+td {
+	font-size: 90%;
+}
+
+div#content {
+	border-top: 5px solid #D9D9D9;
+	padding-top: 10px;
+}
+
+div#footer {
+	border-top: 5px solid #D9D9D9;
+	padding: 10px 0;
+	margin: 20px 0;
+}
+
+div.notice {
+	padding: 5px;
+	width: 85%;
+	margin: 10px auto;
+	background: #BFB;
+	border: 5px solid #8F8;
+	color: #152;
+}
+
+fieldset {
+	margin: 0 auto;
+	border: 1px solid #DDD;
+	padding: 10px;
+}
+
+fieldset.login {
+	width: 310px;
+}
+
+label {
+	font-size: 80%;
+	display: block;
+	
+}
+
+input {
+	display: block;
+}
+
+input[type="text"], input[type="password"] {
+	width: 300px;
+	height: 30px;
+	font-size: 16px;
+}
+
+input[type="submit"] {
+	font-size: 16px;
+}
