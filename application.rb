@@ -3,8 +3,26 @@ require 'sinatra'
 require 'activerecord'
 require 'redcloth'
 
-SITE_TITLE = "My Website"
-SITE_DESCRIPTION = "Just my little home on the internet!"
+configure :production do
+  $config = {
+    :title => "My Website",
+    :description => "Just my little home on the internet!",
+    :database => "sqlite3:///#{Dir.pwd}/db/application.db",
+    :template => 'default'
+  }
+  
+  set :views, Proc.new { File.join(root, "templates/#{$config[:template]}")}
+end
+
+configure :test do
+  $config = {
+    :title => "My Website"
+    :description => "Just my little home on the internet!"
+    :database => "sqlite3::memory:",
+    :template => 'default'
+  }
+end
+
 
 enable :sessions
 
@@ -197,19 +215,19 @@ helpers do
   def partial(page, options={})
     erb page, options.merge!(:layout => false)
   end
-end
 
-def flash
-  session[:flash] = {} if session[:flash] && session[:flash].class != Hash
-  session[:flash] ||= {}
-end
+  def flash
+    session[:flash] = {} if session[:flash] && session[:flash].class != Hash
+    session[:flash] ||= {}
+  end
 
-def custom_erb(*args)
-  myerb = erb(*args)
-  flash.clear
-  myerb
-end
+  def custom_erb(*args)
+    myerb = erb(*args)
+    flash.clear
+    myerb
+  end
 
-def authorize
-  redirect '/' unless(session[:admin])
+  def authorize
+    redirect '/' unless(session[:admin])
+  end
 end
