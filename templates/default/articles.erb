@@ -7,12 +7,16 @@
 		<tr>
 			<th>Title</th>
 			<th>Posted By</th>
-			<th>Posted On</th>
+			<th colspan="3">Posted On</th>
+		</tr>
 		<% for article in @articles %>
-		<tr>
+		<tr class="<%= cycle %>">
 			<td><%=article.title%></td>
 			<td><%=article.user.name %></td>
 			<td><%=article.date.strftime("%b %d, %Y") %></td>
+			<td><form action="/admin/article/edit/<%=article.id%>" method="get"><input type="submit" value="edit" /></form></td>
+			<td><form action="/admin/article/<%=article.id%>" method="post"><input type="hidden" name="_method" value="delete"><input type="submit" value="delete" /></form></td>
+				
 		</tr>
 		<% end %>
 	</table>

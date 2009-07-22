@@ -66,6 +66,7 @@ li {
 table {
 	width: 100%;
 	margin: 10px auto;
+	border: 3px solid #ABE;
 }
 
 th {
@@ -78,6 +79,10 @@ th, td {
 
 td {
 	font-size: 90%;
+}
+
+tr.even td {
+	background: #F0F0FF;
 }
 
 div#content {
@@ -113,6 +118,7 @@ fieldset.login {
 label {
 	font-size: 80%;
 	display: block;
+	margin: 15px 0 0;
 	
 }
 

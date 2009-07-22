@@ -14,10 +14,21 @@ configure :production do
   set :views, Proc.new { File.join(root, "templates/#{$config[:template]}")}
 end
 
+configure :development do
+  $config = {
+    :title => "My Website",
+    :description => "Just my little home on the internet",
+    :database => "sqlite3:///#{Dir.pwd}/db/application_dev.db",
+    :template => 'default'
+  }
+  
+  set :views, Proc.new { File.join(root, "templates/#{$config[:template]}")}
+end
+
 configure :test do
   $config = {
-    :title => "My Website"
-    :description => "Just my little home on the internet!"
+    :title => "My Website",
+    :description => "Just my little home on the internet!",
     :database => "sqlite3::memory:",
     :template => 'default'
   }
@@ -32,6 +43,7 @@ ActiveRecord::Base.establish_connection(
 )
 
 class Post < ActiveRecord::Base
+  validates_presence_of :title, :body
   belongs_to :user
   has_many :comments
 end
@@ -108,57 +120,53 @@ get '/logout' do
 end
 
 get '/admin/article' do
-  authorize
   @articles = Post.all
   custom_erb :articles
 end
 
+delete '/admin/article/:id' do
+  @article = Post.find(params[:id])
+  if @article.delete
+    flash[:notice] = "Article removed!"
+  end
+  redirect '/admin/article'
+end
+
 get '/admin/article/create' do
-  authorize
   custom_erb :new_article
 end
 
-post '/admin/article/create' do
-  authorize
+get '/admin/article/edit/:id' do
+  @article = Post.find(params[:id])
+  custom_erb :edit_article
+end
+
+put '/admin/article/:id' do
+  @article = Post.find(params[:id])
+  @article.title = params[:title]
+  @article.body = params[:body]
+  if @article.save
+    flash[:notice] = "Article updated successfully!"
+  else
+    flash[:notice] = "There was an error updating this article"
+  end
+  redirect '/admin/article'
+end
+
+post '/admin/article' do
   @post = Post.new(:title => params[:title], :body => params[:body], :date => Time.now, :user_id => session[:admin])
   @post.save
   flash[:notice] = "New article added!"
   redirect '/admin/article'
 end
 
-get '/delete_post/:id' do
-  authorize
-  id = params[:id]
-  Post.find(:first, :conditions=> "id = #{id}").delete
-  flash[:notice] = "Post Deleted!"
-  redirect '/admin'
-end
 
-get '/edit_post/:id' do
-  authorize
-  id = params[:id]
-  @post = Post.find(:first, :conditions=> "id = #{id}")
-  custom_erb :edit_post
-end
-
-post '/edit_post' do
-  authorize
-  id = params[:id]
-  @post = Post.find(:first, :conditions=> "id = #{id}")
-  @post.title = params[:title]
-  @post.body = params[:body]
-  @post.save
-  flash[:notice] = "Post updated!"
-  redirect '/admin'
-end
 
 get '/new_project' do
-  authorize
   custom_erb :new_project
 end
 
 post '/new_project' do
-  authorize
   @project = Project.new(:title => params[:title],
                          :description => params[:description],
                          :project_type => params[:project_type],
@@ -182,7 +190,6 @@ post '/new_project' do
 end
 
 get '/delete_project/:id' do
-  authorize
   id = params[:id]
   Project.find(:first, :conditions=> "id = #{id}").delete
   flash[:notice] = "Project deleted!"
@@ -190,14 +197,12 @@ get '/delete_project/:id' do
 end
 
 get '/edit_project/:id' do
-  authorize
   id = params[:id]
   @project = Project.find(:first, :conditions=> "id = #{id}")
   custom_erb :edit_project
 end
 
 post '/edit_project' do
-  authorize
   id = params[:id]
   @project = Project.find(:first, :conditions=> "id = #{id}")
   @project.title = params[:title] unless params[:title].empty?
@@ -208,6 +213,13 @@ post '/edit_project' do
   flash[:notice] = "Project Updated!"
   redirect '/admin'
 end
+
+############FILTERS################
+
+before do
+  authorize if request.path_info =~ /^\/admin\/./
+end
+
 
 ############HELPERS################
 
@@ -226,8 +238,14 @@ helpers do
     flash.clear
     myerb
   end
+  
+  def cycle
+    @current ||= %w(even odd)
+    @current = [@current.pop] + @current
+    @current.first
+  end
 
   def authorize
-    redirect '/' unless(session[:admin])
+    redirect '/admin' unless(session[:admin])
   end
 end
