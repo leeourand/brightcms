@@ -7,7 +7,8 @@ configure :production do
   $config = {
     :title => "My Website",
     :description => "Just my little home on the internet!",
-    :database => "sqlite3:///#{Dir.pwd}/db/application.db",
+    :adapter => 'sqlite3',
+    :dbfile => "#{Dir.pwd}/db/application.db",
     :template => 'default'
   }
   
@@ -18,7 +19,8 @@ configure :development do
   $config = {
     :title => "My Website",
     :description => "Just my little home on the internet",
-    :database => "sqlite3:///#{Dir.pwd}/db/application_dev.db",
+    :adapter => 'sqlite3',
+    :dbfile => "#{Dir.pwd}/db/application_dev.db",
     :template => 'default'
   }
   
@@ -29,23 +31,27 @@ configure :test do
   $config = {
     :title => "My Website",
     :description => "Just my little home on the internet!",
-    :database => "sqlite3::memory:",
+    :adapter => 'sqlite3',
+    :dbfile => 'db/application_test.db',
     :template => 'default'
   }
 end
 
+ActiveRecord::Base.establish_connection(
+  :adapter => $config[:adapter],
+  :dbfile => $config[:dbfile]
+)
 
 enable :sessions
-
-ActiveRecord::Base.establish_connection(
-  :adapter => 'sqlite3',
-  :dbfile => 'db/application.db'
-)
 
 class Post < ActiveRecord::Base
   validates_presence_of :title, :body
   belongs_to :user
   has_many :comments
+end
+
+class Comment < ActiveRecord::Base
+  belongs_to :post
 end
 
 class ProjectType < ActiveRecord::Base
@@ -64,8 +70,26 @@ error(404) do
 end
 
 get '/' do
-  @posts = Post.all.reverse
+  @articles = Post.all.reverse
   custom_erb :index
+end
+
+get '/article/:id' do
+  @article = Post.find(params[:id])
+  custom_erb :view_article
+end
+
+post '/article/:id/comment' do
+  @article = Post.find(params[:id])
+  @comment = Comment.new(:username=>params[:name], :body =>params[:body], :time=>Time.now)
+  @comment.save
+  @article.comments << @comment
+  if @article.save
+    flash[:notice] = "Your comment has been added!"
+  else
+    flash[:notice] = "There was an error adding your comment"
+  end
+  redirect "/article/#{params[:id]}"
 end
 
 get '/work' do

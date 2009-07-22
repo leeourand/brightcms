@@ -1,14 +1,14 @@
 <% @title = "Home" %>
 
-<% if @posts.empty? %>
+<% if @articles.empty? %>
 	<p>There are no currently no posts!</p>
 <% else %>
 
-	<% for post in @posts %>
-	<div id="<%=post.id%>">
-		<h3><%=post.title%></h3>
-		<h4>Posted by <%=post.user.name%></h4>
-		<p><%=post.body%></p>
+	<% for article in @articles %>
+	<div class="article">
+		<h3><a href="/article/<%=article.id%>"><%=article.title%></a></h3>
+		<h4><%=article.date.strftime("%b %d %Y")%></h4>
+		<%=RedCloth.new(article.body).to_html%>
 	</div>
 	<% end %>
 <% end %>

@@ -1,0 +1,29 @@
+<div id="article">
+	<h3><%=@article.title %></h3>
+	<%=RedCloth.new(@article.body).to_html%>
+	<p class="meta">Posted by <%=@article.user.name %> on <%=@article.date.strftime("%b %d %Y") %></p>
+</div>
+<div id="comments">
+<h4>Comments</h4>
+<% if @article.comments.empty? %>
+<p>There are no comments for this article</p>
+<% else %>
+	<% for comment in @article.comments %>
+	<div id="<%=comment.id%>">
+		<h5><a href="<%=comment.url%>"><%=comment.username %></a></h5>
+		<%=RedCloth.new(comment.body).to_html %>
+		<p class="meta"><%=comment.time.strftime("%b %d %Y")%></p>
+	</div>
+	<% end %>
+<% end %>
+<form action="/article/<%=@article.id%>/comment" method="post">
+	<fieldset>
+	<legend>Make a Comment</legend>
+	<label for="name">Name</label>
+	<input type="text" name="name" />
+	<label for="body">Comment</label>
+	<textarea name="body" cols="42" rows="11"></textarea>
+	<input type="submit" value="comment" />
+	</fieldset>
+</form>
+</div>
