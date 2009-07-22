@@ -1,11 +1,11 @@
 environment: development
-chdir: /home/lee/web/happygastropod
+chdir: /home/lee/web/cms
 address: 127.0.0.1
 user: root
 group: root
-port: 4567
-pid: /home/lee/web/happygastropod/PID/thin.pid
-rackup: /home/lee/web/happygastropod/server.ru
+port: 8080
+pid: /home/lee/web/cms/PID/thin.pid
+rackup: /home/lee/web/cms/server.ru
 log: ./thin.log
 max_conns: 1024
 timeout: 30
