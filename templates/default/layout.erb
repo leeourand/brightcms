@@ -11,6 +11,12 @@
 <body>
 	<h1><a href="/"><%= $config[:title] %></a></h1>
 	<h2><%= $config[:description] %></h2>
+	<ul id="navigation">
+		<li><a href="/">Home</a></li>
+		<%for page in @pages %>
+		<li><a href="/page/<%=page.id%>"><%=page.title%></a></li>
+		<% end %>
+	</ul>
 	<div id="content">
 		<% if(flash[:notice]) %>
 		<div class="notice"><%= flash[:notice] %></div>

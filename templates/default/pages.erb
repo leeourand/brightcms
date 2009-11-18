@@ -1,0 +1,22 @@
+<h2>Pages</h2>
+<p>You can manage your pages from here</p>
+<% if @pages.empty? %>
+	<p>You currently have no pages</p>
+<% else %>
+	<table>
+		<tr>
+			<th>Title</th>
+			<th colspan="3">Created By</th>
+		</tr>
+		<% for page in @pages %>
+		<tr class="<%= cycle %>">
+			<td><%=page.title%></td>
+			<td><%=page.user.name %></td>
+			<td><form action="/admin/page/edit/<%=page.id%>" method="get"><input type="submit" value="edit" /></form></td>
+			<td><form action="/admin/page/<%=page.id%>" method="post"><input type="hidden" name="_method" value="delete"><input type="submit" value="delete" /></form></td>
+				
+		</tr>
+		<% end %>
+	</table>
+<% end %>
+<a href="/admin/page/create">Create Page</a>

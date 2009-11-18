@@ -44,6 +44,11 @@ ActiveRecord::Base.establish_connection(
 
 enable :sessions
 
+class Page < ActiveRecord::Base
+  validates_presence_of :title
+  belongs_to :user
+end
+
 class Post < ActiveRecord::Base
   validates_presence_of :title, :body
   belongs_to :user
@@ -63,6 +68,7 @@ end
 
 class User < ActiveRecord::Base
   has_many :posts
+  has_many :pages
 end
 
 error(404) do
@@ -70,6 +76,7 @@ error(404) do
 end
 
 get '/' do
+  @pages = Page.all
   @articles = Post.all.reverse
   custom_erb :index
 end
@@ -92,13 +99,9 @@ post '/article/:id/comment' do
   redirect "/article/#{params[:id]}"
 end
 
-get '/work' do
-  @projects = Project.all
-  custom_erb :work
-end
-
-get '/contact' do
-  custom_erb :contact
+get '/page/:id' do
+  @page = Page.find(params[:id])
+  custom_erb :view_page  
 end
 
 post '/contact' do
@@ -184,8 +187,55 @@ post '/admin/article' do
   redirect '/admin/article'
 end
 
+# PAGES
+
+get '/admin/page' do
+  @pages = Page.all
+  custom_erb :pages
+end
+
+delete '/admin/page/:id' do
+  @page = Page.find(params[:id])
+  if @page.delete
+    flash[:notice] = "Page removed!"
+  end
+  redirect '/admin/page'
+end
+
+get '/admin/page/create' do
+  custom_erb :new_page
+end
+
+get '/admin/page/edit/:id' do
+  @page = Page.find(params[:id])
+  custom_erb :edit_page
+end
+
+put '/admin/page/:id' do
+  @page = Page.find(params[:id])
+  @page.title = params[:title]
+  @page.content = params[:content]
+  if @page.save
+    flash[:notice] = "Page updated successfully!"
+  else
+    flash[:notice] = "There was an error updating this page"
+  end
+  redirect '/admin/page'
+end
+
+post '/admin/page' do
+  @page = Page.new(:title => params[:title], :content => params[:content], :user_id => session[:admin])
+  if @page.save
+    flash[:notice] = "New page successfully added!"
+  else
+    flash[:notice] = "There was a problem adding your page"
+  end
+  redirect '/admin/page'
+end
 
 
+
+# OLD CRAP THAT NEEDS UPDATING
 get '/new_project' do
   custom_erb :new_project
 end
@@ -242,6 +292,10 @@ end
 
 before do
   authorize if request.path_info =~ /^\/admin\/./
+end
+
+before do
+  @pages = Page.all
 end
 
 

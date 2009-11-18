@@ -1,0 +1,11 @@
+<form action="/admin/page/<%=@page.id%>" method="post">
+	<input type="hidden" name="_method" value="put" />
+	<fieldset>
+		<legend>Edit Page</legend>
+		<label for="title">Title</label>
+		<input type="text" name="title" value="<%=@page.title %>" />
+		<label for="content">Content</label>
+		<textarea name="content" cols="60" rows="22"><%=@page.content%></textarea>
+		<input type="submit" value="submit" />
+	</fieldset>
+</form>

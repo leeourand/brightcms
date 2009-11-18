@@ -1,0 +1,4 @@
+<div id="article">
+	<h3><%=@page.title %></h3>
+	<%=RedCloth.new(@page.content).to_html%>
+</div>
